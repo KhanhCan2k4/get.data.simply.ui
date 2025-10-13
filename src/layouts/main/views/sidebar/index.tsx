@@ -10,22 +10,13 @@ import DBSideBarItemSkeleton from "@/layouts/main/views/db-sidebar-item/skeleton
 import MsgSideBarItemSkeleton from "../msg-sidebar-item/skeleton";
 import Modal from "@/components/modal";
 import { Action } from "@/components/modal-action-item";
-import {
-  AddIcon,
-  CodeIcon,
-  ConsoleIcon,
-  DownFileIcon,
-  TrashIcon,
-} from "@/components/icon";
+import { AddIcon, CodeIcon, DownFileIcon, TrashIcon } from "@/components/icon";
+import { useShortcut } from "@/hooks/use-shortcut";
 
 const SKELETON_DB_ITEMS_QUANTITY = 10;
 const SKELETON_MSG_ITEMS_QUANTITY = 10;
 
-type SideBarProps = {
-  onOpenConsole?: (db: DB) => void;
-};
-
-export default function SideBar({ onOpenConsole }: SideBarProps) {
+export default function SideBar() {
   const navigate = useNavigate();
   const target = useRef<HTMLDivElement>(null);
   const [selectedE, setSelectedE] = useState<React.JSX.Element>();
@@ -78,14 +69,6 @@ export default function SideBar({ onOpenConsole }: SideBarProps) {
             onClick: alert,
           },
           {
-            icon: <ConsoleIcon className="size-4 text-black-500" />,
-            title: "Open Console",
-            onClick: () => {
-              setSelectedE(undefined);
-              onOpenConsole && onOpenConsole(db);
-            },
-          },
-          {
             icon: <CodeIcon className="size-4 text-yellow-500" />,
             title: "Create API",
             onClick: () => {
@@ -117,6 +100,15 @@ export default function SideBar({ onOpenConsole }: SideBarProps) {
         break;
     }
   };
+
+  const handleToggleOpen = () => {
+    if (!target.current) return;
+
+    setOpen(!open);
+    target.current.style.width = "auto";
+  };
+
+  useShortcut(["Ctrl", "Alt", "Digit2"], handleToggleOpen);
 
   useEffect(() => {
     if (!target.current) return;
@@ -162,7 +154,7 @@ export default function SideBar({ onOpenConsole }: SideBarProps) {
             className="p-2 flex flex-row text-sm text-blue-400 items-center justify-center gap-2 shadow-sm rounded-full cursor-pointer hover:bg-blue-400 hover:text-white"
           >
             <AddIcon className="size-4" />
-            <span>Add new database</span>
+            {open && <span>Add new database</span>}
           </div>
           <div className="flex-1 flex flex-col justify-start gap-4">
             {getAllDBs.isLoading

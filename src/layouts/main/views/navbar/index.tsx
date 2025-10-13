@@ -9,13 +9,11 @@ import NavbarItem from "@/layouts/main/views/navbar-item";
 import { useEffect, useRef, useState } from "react";
 import { ROUTERS } from "@/constants/routes";
 import __logo from "@public/logo.png";
-import { DB } from "@/hooks/apis/use-dbs";
+import { useConsole } from "@/providers/console";
+import { useShortcut } from "@/hooks/use-shortcut";
 
-type NavbarProps = {
-  onOpenConsole: (db: DB) => void;
-};
-
-export default function Navbar({ onOpenConsole }: NavbarProps) {
+export default function Navbar() {
+  const { openConsole } = useConsole();
   const target = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(true);
   let consolePath = `${window.location.pathname}`;
@@ -44,6 +42,15 @@ export default function Navbar({ onOpenConsole }: NavbarProps) {
     },
   ];
 
+  const handleToggleOpen = () => {
+    if (!target.current) return;
+
+    setOpen(!open);
+    target.current.style.width = "auto";
+  };
+
+  useShortcut(["Ctrl", "Alt", "Digit1"], handleToggleOpen);
+
   useEffect(() => {
     if (!target.current) return;
     const observer = new ResizeObserver((entries) => {
@@ -61,7 +68,7 @@ export default function Navbar({ onOpenConsole }: NavbarProps) {
 
   return (
     <section
-      className={`flex flex-col h-full resize-x overflow-auto min-w-20 max-w-[500px] p-4 border-r-2 border-r-gray-50`}
+      className={`flex flex-col h-full resize-x overflow-auto min-w-24 max-w-[500px] p-4 border-r-2 border-r-gray-50`}
       ref={target}
     >
       <div className="flex items-center justify-center gap-2 pb-4 border-b-2 border-b-gray-100">
@@ -85,13 +92,13 @@ export default function Navbar({ onOpenConsole }: NavbarProps) {
           open={open}
           icon={<ConsoleIcon />}
           path={consolePath}
-          displayName="CONSOLE"
-          onClick={() => onOpenConsole({ id: "id", name: "name", tables: [] })}
+          displayName="SQL CONSOLE"
+          onClick={openConsole}
         />
       </div>
 
       <div className="flex items-center justify-center gap-2 pt-2 border-t-2 border-t-gray-100">
-        <Avatar name="Hello world" className="w-10 h-10" />
+        <Avatar name="Hello world" />
         <div className={`flex flex-col ${!open && "hidden"}`}>
           <span className="font-semibold">Hello World</span>
           <span className="font-light text-sm">hello.world@example.com</span>

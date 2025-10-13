@@ -32,8 +32,12 @@ export default function SearchInput({
     <div className="relative text-gray-500 text-sm italic" {...props}>
       <input
         type="text"
-        className={`w-full outline-none shadow-sm 
-            ${open ? "pr-4 pl-8 py-3 rounded-3xl" : "p-3 rounded-full"}
+        className={`outline-none shadow-sm 
+            ${
+              open
+                ? "w-full pr-4 pl-8 py-3 rounded-3xl"
+                : "p-3 rounded-full w-14"
+            }
           `}
         placeholder={open ? "Search here..." : ""}
         defaultValue={searchKey}

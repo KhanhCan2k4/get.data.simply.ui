@@ -12,20 +12,21 @@ export default function MainLayout({
   children,
   title,
 }: React.PropsWithChildren & MainLayoutProps) {
-  const [consoleOfDB, setConsoleOfDB] = useState<DB | undefined>(undefined);
+  const [openConsole, setOpenConsole] = useState(false);
+
   return (
     <section>
       <div className="flex w-screen h-screen font-mono">
         <section>
-          <Navbar onOpenConsole={setConsoleOfDB} />
+          <Navbar onOpenConsole={() => {}} />
         </section>
         <section>
-          <SideBar onOpenConsole={setConsoleOfDB} />
+          <SideBar />
         </section>
         <section className="flex-1 overflow-scroll bg-gray-50">
           {children}
         </section>
-        <Console db={consoleOfDB} onClose={() => setConsoleOfDB(undefined)} />
+        <Console />
       </div>
     </section>
   );

@@ -1,27 +1,29 @@
 import { AlertType } from "@/components/alert";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Alert from "@/components/alert";
 
 export function useAlert() {
-  const [alertMsg, setAlertMsg] = useState<React.ReactElement>();
-  const [type, setType] = useState<AlertType>(AlertType.INFO);
-  const [wait, setWait] = useState<number>();
+  const [alert, setAlert] = useState<React.ReactElement>();
 
   const setAlertOptions = (
-    type?: AlertType,
     msg?: React.ReactElement,
+    type?: AlertType,
     wait?: number
   ) => {
-    setType(type ?? AlertType.INFO);
-    setAlertMsg(msg);
-    setWait(wait);
+    setAlert(
+      <Alert
+        key={new Date().getTime()}
+        type={type ?? AlertType.INFO}
+        wait={wait}
+      >
+        {msg}
+      </Alert>
+    );
   };
 
-  const alertElement = (
-    <Alert type={type} wait={wait}>
-      {alertMsg}
-    </Alert>
-  );
+  const forceClose = () => {
+    setAlert(undefined);
+  };
 
-  return { alertElement, setAlertOptions };
+  return { alertElement: alert, setAlertOptions, forceClose };
 }

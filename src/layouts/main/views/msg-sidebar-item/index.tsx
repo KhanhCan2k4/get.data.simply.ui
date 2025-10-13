@@ -28,10 +28,7 @@ export default function MsgSideBarItem({
       onClick={() => navigate(path)}
       {...props}
     >
-      <Avatar
-        name={receiver.name}
-        className={`${open ? "w-10 h-10" : "w-12 h-12"} shadow-sm rounded-full`}
-      />
+      <Avatar name={receiver.name} />
       <div
         className={`flex-1 flex flex-col gap-2 break-words min-w-20 ${
           !open && "hidden"
