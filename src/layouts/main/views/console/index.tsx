@@ -1,4 +1,3 @@
-import BadgeButton from "@/components/button";
 import {
   AddIcon,
   CloseIcon,

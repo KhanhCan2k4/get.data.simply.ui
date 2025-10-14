@@ -1,6 +1,6 @@
 import { TrashIcon } from "@/components/icon";
 import { useState, useMemo } from "react";
-import { DATA_TYPES } from "./table-create.constants";
+import { DATA_TYPES } from "@/routers/table-create/table-create.constants";
 import { Column } from "@/routers/table-create/table-create.types";
 import SqlEditor from "@/components/sql-editor";
 

@@ -82,7 +82,7 @@ export default function DatabaseCreatePage() {
 
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-8">
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow-sm p-8">
         <div className="flex items-center justify-center mb-8">
           {[1, 2, 3].map((s, index) => (
             <React.Fragment key={s}>

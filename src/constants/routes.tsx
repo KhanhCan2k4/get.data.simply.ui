@@ -9,7 +9,7 @@ import MessageDetailPage from "@/routers/message-detail";
 import MessagesPage from "@/routers/messages";
 import SettingsPage from "@/routers/settings";
 import TableCreatePage from "@/routers/table-create";
-import TablesPage from "@/routers/tables";
+import TableDetailPage from "@/routers/table-detail";
 import { ReactElement } from "react";
 
 type AppRoute = {
@@ -68,7 +68,7 @@ const ROUTERS: AppRouter = {
     path: "/databases/:database/tables/:table",
     element: (
       <MainLayout>
-        <TablesPage />
+        <TableDetailPage />
       </MainLayout>
     ),
   },

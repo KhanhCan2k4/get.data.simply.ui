@@ -7,11 +7,22 @@ import { ROUTERS } from "@/constants/routes";
 import MsgSideBarItem from "@/layouts/main/views/msg-sidebar-item";
 import SearchInput from "@/components/search-input";
 import DBSideBarItemSkeleton from "@/layouts/main/views/db-sidebar-item/skeleton";
-import MsgSideBarItemSkeleton from "../msg-sidebar-item/skeleton";
+import MsgSideBarItemSkeleton from "@/layouts/main/views/msg-sidebar-item/skeleton";
 import Modal from "@/components/modal";
 import { Action } from "@/components/modal-action-item";
-import { AddIcon, CodeIcon, DownFileIcon, TrashIcon } from "@/components/icon";
+import {
+  AddIcon,
+  ChatBubbleIcon,
+  CodeIcon,
+  ConsoleIcon,
+  DownFileIcon,
+  TrashIcon,
+} from "@/components/icon";
 import { useShortcut } from "@/hooks/use-shortcut";
+import Avatar from "@/components/avatar";
+import NavbarItem from "../navbar-item";
+import { useConsole } from "@/providers/console";
+import __logo from "@public/logo.png";
 
 const SKELETON_DB_ITEMS_QUANTITY = 10;
 const SKELETON_MSG_ITEMS_QUANTITY = 10;
@@ -25,6 +36,7 @@ export default function SideBar() {
   const [open, setOpen] = useState(true);
   const { getAllDBs } = useDBs();
   const { getAllReceivers } = useReceivers();
+  const { openConsole } = useConsole();
   let tab: "DB" | "MSG" | undefined = undefined;
   const createDBPath = ROUTERS.DATABASE_CREATE.path;
   const createApiPath = ROUTERS.DATABASE_API_CREATE.path;
@@ -139,6 +151,16 @@ export default function SideBar() {
       } h-full resize-x overflow-auto min-w-24 max-w-[500px] flex flex-col justify-start items-center p-4 border-r-2 border-r-gray-50 gap-2`}
       ref={target}
     >
+      <div className="flex items-center justify-center gap-2 pb-4 border-b-2 border-b-gray-100">
+        <img src={__logo} alt="Logo" className="w-10 h-10" />
+        <div className={`flex flex-col ${!open && "hidden"}`}>
+          <span className={`font-bold ${!open && "hidden"}`}>
+            Get Data Simply
+          </span>
+          <span className="font-light text-sm">Version 1.0.0</span>
+        </div>
+      </div>
+
       <section className="border-b-2 border-gray-50 pb-2">
         <SearchInput
           onFinish={handleSearch}
@@ -151,12 +173,12 @@ export default function SideBar() {
         <>
           <div
             onClick={() => navigate(createDBPath)}
-            className="p-2 flex flex-row text-sm text-blue-400 items-center justify-center gap-2 shadow-sm rounded-full cursor-pointer hover:bg-blue-400 hover:text-white"
+            className="overflow-y-scroll p-2 flex flex-row text-sm text-blue-400 items-center justify-center gap-2 shadow-sm rounded-full cursor-pointer hover:bg-blue-400 hover:text-white"
           >
             <AddIcon className="size-4" />
             {open && <span>Add new database</span>}
           </div>
-          <div className="flex-1 flex flex-col justify-start gap-4">
+          <div className="overflow-y-scroll flex-1 flex flex-col justify-start gap-4">
             {getAllDBs.isLoading
               ? Array.from({ length: SKELETON_DB_ITEMS_QUANTITY }).map(
                   (_, index) => (
@@ -176,7 +198,7 @@ export default function SideBar() {
       )}
 
       {tab === "MSG" && (
-        <div className="flex-1 flex flex-col justify-start gap-4">
+        <div className="overflow-y-scroll flex-1 flex flex-col justify-start gap-4">
           {getAllReceivers.isLoading
             ? Array.from({ length: SKELETON_MSG_ITEMS_QUANTITY }).map(
                 (_, index) => <MsgSideBarItemSkeleton key={index} open={open} />
@@ -191,6 +213,34 @@ export default function SideBar() {
               ))}
         </div>
       )}
+
+      <div className="flex items-center justify-center py-2 border-t-2 border-t-gray-100">
+        <NavbarItem
+          open={open}
+          icon={<ChatBubbleIcon />}
+          path={"#"}
+          onClick={openConsole}
+          displayName="MESSAGES"
+        />
+      </div>
+
+      <div className="flex items-center justify-center py-2 border-t-2 border-t-gray-100">
+        <NavbarItem
+          open={open}
+          icon={<ConsoleIcon />}
+          path={"#"}
+          onClick={openConsole}
+          displayName="SQL CONSOLE"
+        />
+      </div>
+
+      <div className="flex items-center justify-center gap-2 pt-2 border-t-2 border-t-gray-100">
+        <Avatar name="Hello world" />
+        <div className={`flex flex-col ${!open && "hidden"}`}>
+          <span className="font-semibold">Hello World</span>
+          <span className="font-light text-sm">hello.world@example.com</span>
+        </div>
+      </div>
 
       <Modal
         open={!!selectedE}

@@ -6,5 +6,6 @@ export type Column = {
   defaultValue: string;
   isNullable: boolean;
   isPrimaryKey: boolean;
+  isForeignKey?: boolean;
   isAutoIncrement: boolean;
 };

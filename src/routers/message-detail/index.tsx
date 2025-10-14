@@ -19,7 +19,7 @@ import {
 } from "@/components/icon";
 import Modal from "@/components/modal";
 import MessageItem from "@/routers/message-detail/views/message-item";
-import Alert, { AlertType } from "@/components/alert";
+import { AlertType } from "@/components/alert";
 import { useAlert } from "@/hooks/use-alert";
 import SearchInput from "@/components/search-input";
 
@@ -44,10 +44,10 @@ export default function MessageDetailPage() {
   const handleRemoveMsg = (msg: Message) => {
     setSelectedE(undefined);
     setAlertOptions(
-      AlertType.SUCCESS,
       <div key={msg.id} className="text-center font-light italic">
         Remove [{msg.content.substring(0, 20)}...] successfully!!
-      </div>
+      </div>,
+      AlertType.SUCCESS
     );
   };
 
@@ -57,10 +57,10 @@ export default function MessageDetailPage() {
     await navigator.clipboard.writeText(msg.content);
 
     setAlertOptions(
-      AlertType.INFO,
       <div key={msg.id} className="text-center font-light italic">
         Copy [{msg.content.substring(0, 20)}...] successfully!!
-      </div>
+      </div>,
+      AlertType.INFO
     );
   };
 
