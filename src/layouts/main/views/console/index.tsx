@@ -19,6 +19,8 @@ import { AlertType } from "@/components/alert";
 import useIndexedDB from "@/hooks/use-indexed-db";
 import Modal from "@/components/modal";
 import { AddSqlShortcutForm } from "./sql-shortcut/add-shortcut-form";
+import { createSlug } from "@/utils/create-slug";
+import { Action } from "@/components/modal-action-item";
 
 const ALERT_WAIT_TIME = 10000;
 
@@ -28,7 +30,8 @@ type ShortCut = {
   sql: string;
   text: string;
   keys: string[];
-  className: string;
+  className?: string;
+  styles?: React.CSSProperties;
 };
 
 const DEFAULT_SQLS: ShortCut[] = [
@@ -36,7 +39,7 @@ const DEFAULT_SQLS: ShortCut[] = [
     sql: "SELECT * FROM <table>;",
     text: "Select *",
     keys: ["Ctrl", "Alt", "S"],
-    className: "hover:bg-purple-400 h-fit",
+    className: "hover:bg-black hover:text-white h-fit",
   },
   {
     sql: "INSERT INTO <table> (<col 1>, <col 2>, ..., <col n>) VALUES (<value 1>, <value 2>, ..., <value n>);",
@@ -48,13 +51,13 @@ const DEFAULT_SQLS: ShortCut[] = [
     sql: "UPDATE <table> SET <col 1> = <value 1>, <col 2> = <value 2>, ..., <col n> = <value n> WHERE <condition>;",
     text: "Update",
     keys: ["Ctrl", "Alt", "U"],
-    className: "hover:bg-orange-400 h-fit",
+    className: "hover:bg-blue-400 h-fit",
   },
   {
     sql: "DELETE FROM <table> WHERE <condition>;",
     text: "Delete",
     keys: ["Ctrl", "Alt", "D"],
-    className: "hover:bg-pink-400 h-fit",
+    className: "hover:bg-red-400 h-fit",
   },
 ];
 
@@ -64,6 +67,8 @@ export default function Console() {
   const [sql, setSql] = useState("");
   const { alertElement, setAlertOptions } = useAlert();
   const [addedKeyE, setAddedKeyE] = useState<ReactNode>();
+  const [removedKeyE, setRemovedKeyE] = useState<ReactNode>();
+  const [removedKeyActions, setRemovedKeyActions] = useState<Action[]>([]);
   const [savedShortcuts, setSavedShortcuts] = useState<ShortCut[]>([]);
 
   const handleRunSql = () => {
@@ -102,7 +107,7 @@ export default function Console() {
     }
   };
 
-  const handleAddShortCut = (name: string, className: string) => {
+  const handleAddShortCut = (name: string) => {
     setAddedKeyE(undefined);
 
     setAlertOptions(
@@ -116,12 +121,11 @@ export default function Console() {
     shortcutDAO
       .create(
         {
-          className,
           text: name,
           keys: [],
           sql,
         },
-        name
+        createSlug(name)
       )
       .then((result) => {
         if (result) {
@@ -129,6 +133,8 @@ export default function Console() {
             <p className="p-2">Added key [{name}] already!!</p>,
             AlertType.SUCCESS
           );
+
+          handleLoadShortcuts();
         } else {
           setAlertOptions(
             <p className="p-2">Failed to add key [{name}]!!</p>,
@@ -144,14 +150,74 @@ export default function Console() {
       });
   };
 
-  useShortcut(["Ctrl", "Alt", "ArrowUp"], openConsole);
-  useShortcut(["Ctrl", "Alt", "ArrowDown"], closeConsole);
+  const handleRemoveShortCut = (name: string) => {
+    setRemovedKeyE(undefined);
 
-  useEffect(() => {
+    setAlertOptions(
+      <p className="p-2 flex flex-row items-center">
+        <LoadIcon className="size-4 animate-spin" /> Removing key [{name}]...
+      </p>,
+      AlertType.INFO,
+      ALERT_WAIT_TIME
+    );
+
+    shortcutDAO
+      .remove(createSlug(name))
+      .then((result) => {
+        if (result) {
+          setAlertOptions(
+            <p className="p-2">Removed key [{name}] already!!</p>,
+            AlertType.SUCCESS
+          );
+
+          handleLoadShortcuts();
+        } else {
+          setAlertOptions(
+            <p className="p-2">Failed to remove key [{name}]!!</p>,
+            AlertType.ERROR
+          );
+        }
+      })
+      .catch(() => {
+        setAlertOptions(
+          <p className="p-2">Failed to remove key [{name}]!!</p>,
+          AlertType.ERROR
+        );
+      });
+  };
+
+  const handleOpenConfirmRemove = (
+    event: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+    shortcut: ShortCut
+  ) => {
+    event.preventDefault();
+
+    setRemovedKeyE(
+      <SqlShortcut
+        onRun={() => undefined}
+        {...shortcut}
+        className="bg-blue-400 text-white"
+      />
+    );
+
+    setRemovedKeyActions([
+      {
+        icon: <TrashIcon className="size-4" />,
+        title: "Remove this key",
+        onClick: () => handleRemoveShortCut(shortcut.text),
+      },
+    ]);
+  };
+
+  const handleLoadShortcuts = () => {
     shortcutDAO
       .findAll()
       .then((vs) => setSavedShortcuts(vs.map((v) => v._data)));
-  }, [shortcutDAO]);
+  };
+
+  useShortcut(["Ctrl", "Alt", "ArrowUp"], openConsole);
+  useShortcut(["Ctrl", "Alt", "ArrowDown"], closeConsole);
+  useEffect(handleLoadShortcuts, [shortcutDAO]);
 
   return (
     isOpen && (
@@ -181,7 +247,7 @@ export default function Console() {
                 keys={["Ctrl", "Alt", "E"]}
                 onRun={handleRunSql}
                 condition={() => isOpen}
-                className="hover:bg-pink-800 h-fit"
+                className="h-fit"
               >
                 <p className="bg-white p-4 rounded-xl shadow-sm relative">
                   Run the current sql statement.
@@ -237,14 +303,17 @@ export default function Console() {
 
               <span className="w-2 bg-gray-100 rounded-2xl mx-2" />
               <div className="flex-1 flex gap-2 flex-wrap">
-                {savedShortcuts.map((item) => (
+                {savedShortcuts.length > 0 ? savedShortcuts.map((item) => (
                   <SqlShortcut
-                    key={item.text}
+                    key={createSlug(item.text)}
                     onRun={() => setSql(item.sql)}
                     condition={() => isOpen}
+                    onContextMenu={(e) => handleOpenConfirmRemove(e, item)}
                     {...item}
                   />
-                ))}
+                )) : (
+                  <p className="italic text-sm self-center text-gray-400">Your saved shortcuts will be displayed here.</p>
+                )}
               </div>
             </div>
           </div>
@@ -253,6 +322,14 @@ export default function Console() {
 
           <Modal open={!!addedKeyE} onClose={() => setAddedKeyE(undefined)}>
             {addedKeyE}
+          </Modal>
+
+          <Modal
+            open={!!removedKeyE}
+            actions={removedKeyActions}
+            onClose={() => setRemovedKeyE(undefined)}
+          >
+            {removedKeyE}
           </Modal>
         </div>
       </div>

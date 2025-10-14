@@ -1,1 +1,26 @@
-export const TABLE-CREATE_TITLE = "Table-create Page";
+export const DATA_TYPES = {
+  mysql: [
+    "INT",
+    "VARCHAR",
+    "TEXT",
+    "DATE",
+    "DATETIME",
+    "TIMESTAMP",
+    "BOOLEAN",
+    "DECIMAL",
+    "TINYINT",
+  ],
+  postgres: [
+    "INT",
+    "SERIAL",
+    "BIGSERIAL",
+    "VARCHAR",
+    "TEXT",
+    "DATE",
+    "TIMESTAMP",
+    "BOOLEAN",
+    "DECIMAL",
+    "UUID",
+    "JSONB",
+  ],
+};

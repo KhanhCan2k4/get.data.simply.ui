@@ -1,1 +1,10 @@
-export const TABLE-CREATE_TITLE = "Table-create Page";
+export type Column = {
+  id: number;
+  name: string;
+  dataType: string;
+  length: string;
+  defaultValue: string;
+  isNullable: boolean;
+  isPrimaryKey: boolean;
+  isAutoIncrement: boolean;
+};

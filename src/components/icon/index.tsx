@@ -420,3 +420,37 @@ export function PlayIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function MySQLIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      className="w-12 h-12 mx-auto text-blue-500"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M12 6.25278C12 6.25278 10.137 5.92578 8.6875 7.37528C7.2375 8.82528 6.9105 10.6875 6.9105 10.6875M12 6.25278V17.7472M12 6.25278C12 6.25278 13.863 5.92578 15.3125 7.37528C16.7625 8.82528 17.0895 10.6875 17.0895 10.6875M12 17.7472C12 17.7472 10.137 18.0742 8.6875 16.6247C7.2375 15.1747 6.9105 13.3125 6.9105 13.3125M12 17.7472C12 17.7472 13.863 18.0742 15.3125 16.6247C16.7625 15.1747 17.0895 13.3125 17.0895 13.3125M6.9105 10.6875C6.9105 10.6875 5 10.6875 5 12C5 13.3125 6.9105 13.3125 6.9105 13.3125M17.0895 10.6875C17.0895 10.6875 19 10.6875 19 12C19 13.3125 17.0895 13.3125 17.0895 13.3125"
+      ></path>
+    </svg>
+  );
+}
+
+export function PostgresIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      className="w-12 h-12 mx-auto text-blue-800"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M6.572 20.959h3.818V3.041H6.572v17.918zm6.552 0h4.295c3.818 0 6.573-2.58 6.573-6.282 0-2.016-.84-3.79-2.28-4.992 1.14-1.202 1.763-2.887 1.763-4.743 0-3.356-2.525-5.9-5.9-5.9h-4.45v17.918zm3.818-14.735h.336c1.62 0 2.58.896 2.58 2.392 0 1.524-.96 2.42-2.58 2.42h-.336V6.224zm0 8.046h.42c1.8 0 2.94 1.008 2.94 2.696 0 1.712-1.14 2.78-2.94 2.78h-.42v-5.476zM.001 3.041h3.818v17.918H.001V3.041z"></path>
+    </svg>
+  );
+}
