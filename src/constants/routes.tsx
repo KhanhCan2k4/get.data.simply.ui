@@ -3,8 +3,6 @@ import ApiCreatePage from "@/routers/api-create";
 import DatabaseCreatePage from "@/routers/database-create";
 import DatabaseDetailPage from "@/routers/database-detail";
 import DatabasesPage from "@/routers/databases";
-import DetailPage from "@/routers/detail";
-import HomePage from "@/routers/home";
 import MessageDetailPage from "@/routers/message-detail";
 import MessagesPage from "@/routers/messages";
 import SettingsPage from "@/routers/settings";
@@ -23,15 +21,6 @@ type AppRouter = {
 };
 
 const ROUTERS: AppRouter = {
-  HOME: {
-    path: "/",
-    index: true,
-    element: <HomePage />,
-  },
-  DETAIL: {
-    path: "/:id",
-    element: <DetailPage />,
-  },
   DATABASES: {
     path: "/databases",
     element: (
@@ -39,6 +28,7 @@ const ROUTERS: AppRouter = {
         <DatabasesPage />
       </MainLayout>
     ),
+    index: true,
   },
   DATABASE_DETAIL: {
     path: "/databases/:database",

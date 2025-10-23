@@ -148,9 +148,10 @@ export default function SideBar() {
     <section
       className={`${
         !tab && "hidden"
-      } h-full resize-x overflow-auto min-w-24 max-w-[500px] flex flex-col justify-start items-center p-4 border-r-2 border-r-gray-50 gap-2`}
+      } relative h-full resize-x overflow-auto min-w-24 max-w-[500px] flex flex-col justify-start items-center p-4 border-r-2 border-r-gray-50 gap-2`}
       ref={target}
     >
+      <button className="rounded-full p-2"></button>
       <div className="flex items-center justify-center gap-2 pb-4 border-b-2 border-b-gray-100">
         <img src={__logo} alt="Logo" className="w-10 h-10" />
         <div className={`flex flex-col ${!open && "hidden"}`}>
