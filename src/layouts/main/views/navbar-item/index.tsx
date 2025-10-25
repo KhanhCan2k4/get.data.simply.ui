@@ -1,3 +1,4 @@
+import { MenuIcon } from "@/components/icon";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type NavbarItemProps = {
@@ -17,11 +18,19 @@ export default function NavbarItem({
   const location = useLocation();
   const navigate = useNavigate();
   const active = location.pathname.includes(path);
+
+  const handleMenuClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+    if (rest.onContextMenu) {
+      rest.onContextMenu(e);
+    }
+  };
+
   return (
     <div
-      className={`bg-white flex items-center p-2 justify-center gap-2 cursor-pointer transition-all duration-500 hover:bg-gray-50 rounded-full ${
-        active && "text-blue-400"
-      }`}
+      className={`flex items-center p-2 justify-center gap-2 cursor-pointer transition-all duration-100 hover:bg-gray-50
+        ${active ? "text-blue-400 bg-gray-50" : "bg-white"}
+        `}
       onClick={() => navigate(path)}
       {...rest}
     >
@@ -35,6 +44,11 @@ export default function NavbarItem({
       <span className={`font-semibold min-w-[150px] ${!open && "hidden"}`}>
         {displayName}
       </span>
+      {rest.onContextMenu && (
+        <div className="cursor-pointer" onClick={handleMenuClick}>
+          <MenuIcon className="size-4 mr-4" />
+        </div>
+      )}
     </div>
   );
 }

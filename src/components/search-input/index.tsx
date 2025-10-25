@@ -32,7 +32,7 @@ export default function SearchInput({
     <div className="relative text-gray-500 text-sm italic" {...props}>
       <input
         type="text"
-        className={`outline-none shadow-sm 
+        className={`outline-none shadow-sm bg-white
             ${
               open
                 ? "w-full pr-4 pl-8 py-3 rounded-3xl"

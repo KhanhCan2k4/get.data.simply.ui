@@ -1,11 +1,9 @@
 import MainLayout from "@/layouts/main";
-import MessagesLayout from "@/layouts/messages";
 import ApiCreatePage from "@/routers/api-create";
 import DatabaseCreatePage from "@/routers/database-create";
 import DatabaseDetailPage from "@/routers/database-detail";
 import DashboardPage from "@/routers/databases";
 import MessageDetailPage from "@/routers/message-detail";
-import MessagesPage from "@/routers/messages";
 import SettingsPage from "@/routers/settings";
 import TableCreatePage from "@/routers/table-create";
 import TableDetailPage from "@/routers/table-detail";
@@ -71,23 +69,11 @@ const ROUTERS: AppRouter = {
       </MainLayout>
     ),
   },
-  MESSAGES: {
+  MESSAGE_DETAIL: {
     path: "/:database/messages",
     element: (
       <MainLayout>
-        <MessagesLayout>
-          <MessagesPage />
-        </MessagesLayout>
-      </MainLayout>
-    ),
-  },
-  MESSAGE_DETAIL: {
-    path: "/:database/messages/:id",
-    element: (
-      <MainLayout>
-        <MessagesLayout>
           <MessageDetailPage />
-        </MessagesLayout>
       </MainLayout>
     ),
   },

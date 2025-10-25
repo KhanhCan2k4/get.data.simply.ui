@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { DB, useDBs } from "@/hooks/apis/use-dbs";
 import DBSideBarItem from "@/layouts/main/views/db-sidebar-item";
-import { Receiver } from "@/hooks/apis/use-receivers";
 import { useNavigate, useParams } from "react-router-dom";
 import { ROUTERS } from "@/constants/routes";
-import MsgSideBarItem from "@/layouts/main/views/msg-sidebar-item";
 import SearchInput from "@/components/search-input";
 import DBSideBarItemSkeleton from "@/layouts/main/views/db-sidebar-item/skeleton";
 import Modal from "@/components/modal";
@@ -15,13 +13,16 @@ import {
   CodeIcon,
   ConsoleIcon,
   DownFileIcon,
+  GlobleIcon,
+  SettingIcon,
   TrashIcon,
+  ViewIcon,
 } from "@/components/icon";
 import { useShortcut } from "@/hooks/use-shortcut";
 import Avatar from "@/components/avatar";
-import NavbarItem from "../navbar-item";
 import { useConsole } from "@/providers/console";
 import __logo from "@public/logo.png";
+import { useModal } from "@/providers/modal";
 
 const SKELETON_DB_ITEMS_QUANTITY = 10;
 
@@ -38,11 +39,6 @@ export default function SideBar() {
   const { getAllDBs } = useDBs();
 
   /**
-   * @ref
-   */
-  const target = useRef<HTMLDivElement>(null);
-
-  /**
    * @context
    */
   const { openConsole } = useConsole();
@@ -50,9 +46,8 @@ export default function SideBar() {
   /**
    * @state
    */
-  const [selectedE, setSelectedE] = useState<React.JSX.Element>();
-  const [modalActions, setModalActions] = useState<Action[]>([]);
   const [open, setOpen] = useState(true);
+  const { setModalChildren, setIsModalOpen, setModalActions } = useModal();
 
   /**
    * @property
@@ -68,118 +63,106 @@ export default function SideBar() {
   const handleOpenMessagesPage = () => {
     if (!database) return;
 
-    const messagesPath = ROUTERS.MESSAGES.path.replace(":database", database);
+    const messagesPath = ROUTERS.MESSAGE_DETAIL.path.replace(
+      ":database",
+      database
+    );
     navigate(messagesPath);
   };
 
-  const handleForceOpen = () => {
-    setOpen(true);
-    if (target.current) {
-      target.current.style.width = "auto";
-    }
-  };
-
-  const handleRightClick = (
-    e: React.MouseEvent<HTMLDivElement>,
-    tab: "DB" | "MSG" | undefined,
-    data: DB | Receiver
-  ) => {
+  const handleRightClick = (e: React.MouseEvent<HTMLDivElement>, db: DB) => {
     e.preventDefault();
-    switch (tab) {
-      case "DB":
-        const db = data as DB;
-        setSelectedE(
-          <DBSideBarItem
-            key={db.id}
-            db={db}
-            open
-            onClick={undefined}
-            style={{ scale: 1.1, width: 400, justifyContent: "start" }}
-          />
-        );
+    setModalChildren &&
+      setModalChildren(
+        <DBSideBarItem
+          key={db.id}
+          db={db}
+          open
+          onClick={undefined}
+          style={{
+            scale: 1.1,
+            width: 400,
+            justifyContent: "start",
+            borderRadius: 1000,
+          }}
+        />
+      );
 
-        setModalActions([
-          {
-            icon: <TrashIcon className="size-4 text-red-500" />,
-            title: "Drop Database",
-            onAccept: alert,
+    setModalActions &&
+      setModalActions([
+        {
+          icon: <TrashIcon className="size-4 text-red-500" />,
+          title: "Drop Database",
+          onAccept: alert,
+        },
+        {
+          icon: <DownFileIcon className="size-4 text-purple-500" />,
+          title: "Export Database",
+          onClick: alert,
+        },
+        {
+          icon: <CodeIcon className="size-4 text-yellow-500" />,
+          title: "Create API",
+          onClick: () => {
+            setIsModalOpen(false);
+            navigate(createApiPath.replace(":database", db.name));
           },
-          {
-            icon: <DownFileIcon className="size-4 text-purple-500" />,
-            title: "Export Database",
-            onClick: alert,
+        },
+        {
+          icon: <ChatBubbleIcon className="size-4 text-blue-500" />,
+          title: "Open Group Chat",
+          onClick: () => {
+            setIsModalOpen(false);
+            handleOpenMessagesPage();
           },
-          {
-            icon: <CodeIcon className="size-4 text-yellow-500" />,
-            title: "Create API",
-            onClick: () => {
-              setSelectedE(undefined);
-              navigate(createApiPath.replace(":database", db.name));
-            },
+        },
+        {
+          icon: <ConsoleIcon className="size-4 text-black" />,
+          title: "Open Console",
+          onClick: () => {
+            setIsModalOpen(false);
+            openConsole();
           },
-        ]);
-        break;
-      case "MSG":
-        const receiver = data as Receiver;
-        setSelectedE(
-          <MsgSideBarItem
-            key={receiver.id}
-            receiver={receiver}
-            open
-            onClick={undefined}
-            style={{ scale: 1.1, width: 400 }}
-          />
-        );
+        },
+        {
+          icon: <GlobleIcon className="size-4 text-blue-900" />,
+          title: "Global Variables",
+          onClick: () => {
+            setIsModalOpen(false);
+            openConsole();
+          },
+        },
+        {
+          icon: <SettingIcon className="size-4 text-gray-400" />,
+          title: "Settings",
+          onClick: () => {
+            setIsModalOpen(false);
+            openConsole();
+          },
+        },
+      ]);
 
-        setModalActions([
-          {
-            icon: <TrashIcon className="size-4 text-red-500" />,
-            title: "Remove Chat History",
-            onAccept: alert,
-          },
-        ]);
-        break;
-    }
+    setIsModalOpen(true);
   };
 
-  const handleToggleOpen = () => {
-    if (!target.current) return;
-
-    setOpen(!open);
-    target.current.style.width = "auto";
-  };
-
-  useShortcut(["Ctrl", "Alt", "Digit2"], handleToggleOpen);
-
-  useEffect(() => {
-    if (!target.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const width = entry.contentRect.width;
-        setOpen(width >= 200);
-      }
-    });
-
-    observer.observe(target.current);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(handleForceOpen, []);
+  useShortcut(["Ctrl", "Alt", "Digit2"], () => setOpen((prev) => !prev));
 
   return (
     <section
-      className={`h-full resize-x overflow-auto min-w-24 max-w-[500px] flex flex-col justify-start items-center p-4 border-r-2 border-r-gray-50 gap-2`}
-      ref={target}
+      className={`relative h-full resize-x flex flex-col justify-start items-center py-4 border-r-2 border-r-gray-50 gap-2 z-0 transition-all duration-300 ease-in-out`}
     >
-      <button className="rounded-full p-2"></button>
-      <div className="flex items-center justify-center gap-2 pb-4 border-b-2 border-b-gray-100">
-        <img
-          src={__logo}
-          alt="Logo"
-          className="w-10 h-10"
-          onClick={() => navigate(ROUTERS.DATABASES.path)}
-        />
+      <button
+        className="absolute top-0 right-0 rounded-full p-3 bg-white shadow-sm translate-x-1/2 translate-y-1/5 z-20 opacity-70 hover:opacity-100 hover:bg-blue-400 hover:text-white"
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <ViewIcon className="size-3" />
+      </button>
+
+      <div
+        className="flex items-center justify-center gap-2 pb-4 border-b-2 border-b-gray-100 cursor-pointer"
+        onClick={() => navigate(ROUTERS.HOME.path)}
+      >
+        <img src={__logo} alt="Logo" className="w-10 h-10" />
         <div className={`flex flex-col ${!open && "hidden"}`}>
           <span className={`font-bold ${!open && "hidden"}`}>
             Get Data Simply
@@ -191,7 +174,7 @@ export default function SideBar() {
       <section className="border-b-2 border-gray-50 pb-2">
         <SearchInput
           onFinish={handleSearch}
-          onClick={handleForceOpen}
+          onClick={() => setOpen(true)}
           open={open}
         />
       </section>
@@ -203,7 +186,8 @@ export default function SideBar() {
         <AddIcon className="size-4" />
         {open && <span>Add new database</span>}
       </div>
-      <div className="overflow-y-scroll flex-1 flex flex-col justify-start gap-4">
+
+      <div className="overflow-y-scroll flex-1 flex flex-col justify-start gap-2">
         {getAllDBs.isLoading
           ? Array.from({ length: SKELETON_DB_ITEMS_QUANTITY }).map(
               (_, index) => <DBSideBarItemSkeleton key={index} open={open} />
@@ -213,32 +197,12 @@ export default function SideBar() {
                 key={db.id}
                 db={db}
                 open={open}
-                onContextMenu={(e) => handleRightClick(e, "DB", db)}
+                onContextMenu={(e) => handleRightClick(e, db)}
               />
             ))}
       </div>
 
-      <div className="flex items-center justify-center py-2 border-t-2 border-t-gray-100">
-        <NavbarItem
-          open={open}
-          icon={<ChatBubbleIcon />}
-          path={"#"}
-          onClick={handleOpenMessagesPage}
-          displayName="MESSAGES"
-        />
-      </div>
-
-      <div className="flex items-center justify-center py-2 border-t-2 border-t-gray-100">
-        <NavbarItem
-          open={open}
-          icon={<ConsoleIcon />}
-          path={"#"}
-          onClick={openConsole}
-          displayName="SQL CONSOLE"
-        />
-      </div>
-
-      <div className="flex items-center justify-center gap-2 pt-2 border-t-2 border-t-gray-100">
+      <div className="flex items-center justify-center gap-2 pt-2 border-t-2 border-t-gray-100 cursor-pointer">
         <Avatar name="Hello world" />
         <div className={`flex flex-col ${!open && "hidden"}`}>
           <span className="font-semibold">Hello World</span>
@@ -246,13 +210,13 @@ export default function SideBar() {
         </div>
       </div>
 
-      <Modal
+      {/* <Modal
         open={!!selectedE}
         onClose={() => setSelectedE(undefined)}
         actions={modalActions}
       >
         {selectedE}
-      </Modal>
+      </Modal> */}
     </section>
   );
 }

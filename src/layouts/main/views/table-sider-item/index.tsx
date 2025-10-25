@@ -17,7 +17,7 @@ export default function TableSideBarItem({ db, table }: DBSideBarItemProps) {
   return (
     <div
       key={table.id}
-      className="px-4 py-2 w-full transition-all duration-500 rounded-2xl cursor-pointer hover:bg-gray-50 flex items-center"
+      className="px-4 py-2 w-full transition-all duration-500 rounded-2xl cursor-pointer hover:bg-gray-50 flex items-center text-sm"
       onClick={() => navigate(path)}
     >
       <span className={`flex-1 w-full pr-2 ${active && "underline text-blue-400"}`}>

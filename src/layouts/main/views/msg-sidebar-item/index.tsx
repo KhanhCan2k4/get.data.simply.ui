@@ -25,8 +25,8 @@ export default function MsgSideBarItem({
   const active = location.pathname.includes(path);
   return (
     <div
-      className={`bg-white flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-50 rounded-full ${
-        active && "text-blue-400"
+      className={`flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-50 rounded-full ${
+        active ? "text-blue-400 bg-gray-50" : "bg-white"
       }`}
       onClick={() => navigate(path)}
       {...props}

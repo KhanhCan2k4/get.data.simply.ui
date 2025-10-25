@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ModalActionItem, { Action } from "@/components/modal-action-item";
+import { useModal } from "@/providers/modal";
 
 const DELAY_OPEN_TIME = 200;
 
@@ -22,6 +23,7 @@ export default function Modal({
   React.HTMLAttributes<HTMLDivElement>) {
   const target = useRef<HTMLDivElement>(null);
   const [close, setClose] = useState(true);
+  const { setIsModalOpen } = useModal();
 
   useEffect(() => {
     setClose(!open);
@@ -40,12 +42,14 @@ export default function Modal({
     if (close && onClose) {
       onClose();
     }
+
+    setIsModalOpen(!close);
   }, [close]);
 
   return (
     !close && (
       <div
-        className="fixed inset-0 opacity-0 transition-opacity duration-100"
+        className="fixed inset-0 opacity-0 transition-opacity duration-100 !z-20"
         ref={target}
       >
         <div
@@ -57,7 +61,7 @@ export default function Modal({
           className={`absolute top-10 left-1/2 -translate-x-1/2 z-30 ${props.className}`}
         >
           {children}
-          <div className="mt-4 flex flex-col gap-2 w-full">
+          <div className="mt-4 flex flex-col gap-2 border-1 border-blue-200 p-2 rounded-2xl">
             {actions.map((action, index) => (
               <ModalActionItem action={action} key={index} />
             ))}

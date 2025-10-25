@@ -12,7 +12,7 @@ export default function Avatar(
   return (
     <span
       {...attributes}
-      className={`size-14 bg-blue-200 text-blue-500 rounded-full shadow-sm p-2 flex items-center justify-center text-xl ${attributes.className}`}
+      className={`size-12 bg-blue-200 text-blue-500 rounded-full shadow-sm p-2 flex items-center justify-center text-xl ${attributes.className}`}
     >
       {display}
     </span>

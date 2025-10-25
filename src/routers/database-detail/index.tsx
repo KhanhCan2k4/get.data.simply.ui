@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/dynamic-editable-table";
 import { TableNode } from "@/routers/database-detail/views/table-node";
+import { SettingIcon } from "@/components/icon";
 
 const mockSchemaData = {
   databaseName: "my_app_db",
@@ -161,7 +162,7 @@ export default function DatabaseDetailPage() {
   return (
     <div className="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-full mx-auto">
-        <h2 className="text-xl font-bold mb-2">
+        <h2 className="text-2xl font-bold mb-4">
           Database:{" "}
           <span className="text-blue-400">{schemaData.databaseName}</span>
         </h2>

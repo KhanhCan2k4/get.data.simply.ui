@@ -41,7 +41,7 @@ export default function DBSideBarItem({
       />
 
       {open && active && openTableList && (
-        <>
+        <div className="w-full p-4 pt-2 flex flex-col gap-2">
           <div
             onClick={() => navigate(createTablePath)}
             className="p-2 flex flex-row text-sm text-blue-400 items-center justify-center gap-2 shadow-sm rounded-full cursor-pointer hover:bg-blue-400 hover:text-white"
@@ -58,7 +58,7 @@ export default function DBSideBarItem({
               <i>There is no tables to display</i>
             </small>
           )}
-        </>
+        </div>
       )}
     </>
   );

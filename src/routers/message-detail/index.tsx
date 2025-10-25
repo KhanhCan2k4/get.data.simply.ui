@@ -22,27 +22,26 @@ import MessageItem from "@/routers/message-detail/views/message-item";
 import { AlertType } from "@/components/alert";
 import { useAlert } from "@/hooks/use-alert";
 import SearchInput from "@/components/search-input";
+import { useModal } from "@/providers/modal";
 
 export default function MessageDetailPage() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { database } = useParams<{ database: string }>();
   const msgListRef = useRef<HTMLDivElement>(null);
   const { getOneUser } = useUsers();
   const { getAllMessages } = useMessages();
   const [receiver, setReceiver] = useState<User | undefined>();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedE, setSelectedE] = useState<React.JSX.Element>();
   const [repliedMsg, setRepliedMsg] = useState<Message>();
   const [editedMsg, setEditedMsg] = useState<Message>();
-  const [modalActions, setModalActions] = useState<Action[]>([]);
   const { alertElement, setAlertOptions } = useAlert();
   const [isOnTop, setIsOnTop] = useState(false);
   const [isOnBottom, setIsOnBottom] = useState(false);
   const [foundMsgIdx, setFoundMsgIdx] = useState(0);
   const [foundMsgIds, setFoundMsgIds] = useState<string[]>([]);
+  const { setModalChildren, setIsModalOpen, setModalActions } = useModal();
 
   const handleRemoveMsg = (msg: Message) => {
-    setSelectedE(undefined);
     setAlertOptions(
       <div key={msg.id} className="text-center font-light italic">
         Remove [{msg.content.substring(0, 20)}...] successfully!!
@@ -52,8 +51,6 @@ export default function MessageDetailPage() {
   };
 
   const handleCopyMsg = async (msg: Message) => {
-    setSelectedE(undefined);
-
     await navigator.clipboard.writeText(msg.content);
 
     setAlertOptions(
@@ -69,43 +66,46 @@ export default function MessageDetailPage() {
     data: Message
   ) => {
     e.preventDefault();
-    setSelectedE(
-      <MessageItem
-        className="shadow-sm bg-white w-[500px] p-4 flex rounded-2xl rounded-tl-xs"
-        msg={data}
-      />
-    );
 
-    setModalActions([
-      {
-        icon: <TrashIcon className="size-4 text-red-500" />,
-        title: "Remove this message",
-        onAccept: () => handleRemoveMsg(data),
-      },
-      {
-        icon: <ForwardIcon className="size-4 text-purple-500" />,
-        title: "Reply this message",
-        onClick: () => {
-          setSelectedE(undefined);
-          setEditedMsg(undefined);
-          setRepliedMsg(data);
+    setModalChildren &&
+      setModalChildren(
+        <MessageItem
+          className="shadow-sm bg-white w-[500px] p-4 flex rounded-2xl rounded-tl-xs"
+          msg={data}
+        />
+      );
+
+    setModalActions &&
+      setModalActions([
+        {
+          icon: <TrashIcon className="size-4 text-red-500" />,
+          title: "Remove this message",
+          onAccept: () => handleRemoveMsg(data),
         },
-      },
-      {
-        icon: <EditIcon className="size-4 text-orange-500" />,
-        title: "Edit this message",
-        onClick: () => {
-          setSelectedE(undefined);
-          setRepliedMsg(undefined);
-          setEditedMsg(data);
+        {
+          icon: <ForwardIcon className="size-4 text-purple-500" />,
+          title: "Reply this message",
+          onClick: () => {
+            setEditedMsg(undefined);
+            setRepliedMsg(data);
+          },
         },
-      },
-      {
-        icon: <CopyIcon className="size-4 text-yellow-500" />,
-        title: "Copy this message",
-        onClick: () => handleCopyMsg(data),
-      },
-    ]);
+        {
+          icon: <EditIcon className="size-4 text-orange-500" />,
+          title: "Edit this message",
+          onClick: () => {
+            setRepliedMsg(undefined);
+            setEditedMsg(data);
+          },
+        },
+        {
+          icon: <CopyIcon className="size-4 text-yellow-500" />,
+          title: "Copy this message",
+          onClick: () => handleCopyMsg(data),
+        },
+      ]);
+
+    setIsModalOpen && setIsModalOpen(true);
   };
 
   const handleScroll = () => {
@@ -134,8 +134,8 @@ export default function MessageDetailPage() {
   };
 
   useEffect(() => {
-    if (!id) {
-      () => navigate(ROUTERS.MESSAGES.path);
+    if (!database) {
+      () => navigate(ROUTERS.HOME.path);
       return;
     }
 
@@ -144,11 +144,11 @@ export default function MessageDetailPage() {
     //   .catch(() => navigate(ROUTERS.MESSAGES.path));
 
     setReceiver({
-      id: id,
+      id: database,
       name: "APT",
       email: "apt@example.com",
     } as User);
-  }, [id]);
+  }, [database]);
 
   useEffect(() => {
     if (!receiver) return;
@@ -160,10 +160,10 @@ export default function MessageDetailPage() {
     receiver && (
       <section className="p-2 flex flex-col h-full gap-2">
         <div className="p-2 bg-white shadow-sm rounded-full flex flex-row items-center gap-2">
-          <Avatar name={receiver.name} className="w-12 h-12" />
+          <Avatar name={database ?? "Database"} className="w-12 h-12" />
           <div className="flex-1 flex flex-col">
-            <span className="font-semibold">{receiver.name}</span>
-            <span className="font-light">{receiver.email}</span>
+            <span className="font-semibold">{database}</span>
+            <span className="font-light text-sm">5+ members</span>
           </div>
           <div className="flex gap-2 items-center">
             {foundMsgIds.length > 0 && (
@@ -194,11 +194,15 @@ export default function MessageDetailPage() {
           onScroll={handleScroll}
           className="flex-1 flex flex-col gap-2 overflow-x-hidden overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
-          {messages.map((msg) => (
+          {messages.map((msg, index) => (
             <MessageItem
               key={msg.id}
               msg={msg}
               onContextMenu={(e) => handleRightClick(e, msg)}
+              onOpenMenu={(e) => handleRightClick(e, msg)}
+              hasNextItem={messages[index + 1]?.sender.id === msg.sender.id}
+              hasPrevItem={messages[index - 1]?.sender.id === msg.sender.id}
+              highlighted={foundMsgIds[foundMsgIdx] === msg.id}
             />
           ))}
         </div>
@@ -262,14 +266,6 @@ export default function MessageDetailPage() {
             <SendIcon className="w-6 h-6" />
           </div>
         </div>
-
-        <Modal
-          open={!!selectedE}
-          actions={modalActions}
-          onClose={() => setSelectedE(undefined)}
-        >
-          {selectedE}
-        </Modal>
       </section>
     )
   );

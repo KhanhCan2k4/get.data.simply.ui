@@ -16,17 +16,28 @@ export default function NavbarItemSkeleton({
       className={`flex items-center justify-center gap-2 cursor-pointer rounded-3xl`}
       {...rest}
     >
-      <div className={`rounded-full p-4 shadow-sm`}>
-        <Skeleton circle height={24} width={24} className="bg-gray-500" />
-      </div>
+      <Skeleton
+        circle
+        height={48}
+        width={48}
+        className="bg-gray-500 rounded-full m-2 mr-0 shadow-sm"
+      />
+
       {open && (
         <Skeleton
           width={150}
           height={24}
-          borderRadius={24}
-          className="mr-3 bg-gray-500"
+          borderRadius={24} 
+          className="bg-gray-500"
         />
       )}
+
+      <Skeleton
+        width={30}
+        height={24}
+        borderRadius={24}
+        className="mr-3 bg-gray-500"
+      />
     </div>
   );
 }
