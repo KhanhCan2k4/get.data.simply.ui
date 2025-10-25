@@ -9,7 +9,6 @@ import {
   TableRow,
 } from "@/components/dynamic-editable-table";
 import { TableNode } from "@/routers/database-detail/views/table-node";
-import { ChatBubbleIcon } from "@/components/icon";
 
 const mockSchemaData = {
   databaseName: "my_app_db",
@@ -165,9 +164,6 @@ export default function DatabaseDetailPage() {
         <h2 className="text-xl font-bold mb-2">
           Database:{" "}
           <span className="text-blue-400">{schemaData.databaseName}</span>
-          <div className="fixed top-0 right-0 p-4 m-4 bg-white shadow-sm rounded-full">
-            <ChatBubbleIcon className="size-6" />
-          </div>
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

@@ -1,5 +1,5 @@
 import { ROUTERS } from "@/constants/routes";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Avatar from "@/components/avatar";
 import { Receiver } from "@/hooks/apis/use-receivers";
 import dayjs from "dayjs";
@@ -18,7 +18,10 @@ export default function MsgSideBarItem({
 }: DBSideBarItemProps & React.HTMLAttributes<HTMLDivElement>) {
   const location = useLocation();
   const navigate = useNavigate();
-  const path = ROUTERS.MESSAGE_DETAIL.path.replace(":id", receiver.id);
+  const { database } = useParams<{ database: string }>();
+  const path = ROUTERS.MESSAGE_DETAIL.path
+    .replace(":database", database ?? "#")
+    .replace(":id", receiver.id);
   const active = location.pathname.includes(path);
   return (
     <div

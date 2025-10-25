@@ -1,8 +1,9 @@
 import MainLayout from "@/layouts/main";
+import MessagesLayout from "@/layouts/messages";
 import ApiCreatePage from "@/routers/api-create";
 import DatabaseCreatePage from "@/routers/database-create";
 import DatabaseDetailPage from "@/routers/database-detail";
-import DatabasesPage from "@/routers/databases";
+import DashboardPage from "@/routers/databases";
 import MessageDetailPage from "@/routers/message-detail";
 import MessagesPage from "@/routers/messages";
 import SettingsPage from "@/routers/settings";
@@ -21,17 +22,17 @@ type AppRouter = {
 };
 
 const ROUTERS: AppRouter = {
-  DATABASES: {
-    path: "/databases",
+  HOME: {
+    path: "/",
     element: (
       <MainLayout>
-        <DatabasesPage />
+        <DashboardPage />
       </MainLayout>
     ),
     index: true,
   },
   DATABASE_DETAIL: {
-    path: "/databases/:database",
+    path: "/:database",
     element: (
       <MainLayout>
         <DatabaseDetailPage />
@@ -39,7 +40,7 @@ const ROUTERS: AppRouter = {
     ),
   },
   DATABASE_CREATE: {
-    path: "/databases/create",
+    path: "/create",
     element: (
       <MainLayout>
         <DatabaseCreatePage />
@@ -47,7 +48,7 @@ const ROUTERS: AppRouter = {
     ),
   },
   DATABASE_API_CREATE: {
-    path: "/databases/:database/api/create",
+    path: "/:database/api/create",
     element: (
       <MainLayout>
         <ApiCreatePage />
@@ -55,7 +56,7 @@ const ROUTERS: AppRouter = {
     ),
   },
   TABLE_DETAIL: {
-    path: "/databases/:database/tables/:table",
+    path: "/:database/tables/:table",
     element: (
       <MainLayout>
         <TableDetailPage />
@@ -63,7 +64,7 @@ const ROUTERS: AppRouter = {
     ),
   },
   TABLE_CREATE: {
-    path: "/databases/:database/tables/create",
+    path: "/:database/tables/create",
     element: (
       <MainLayout>
         <TableCreatePage />
@@ -71,18 +72,22 @@ const ROUTERS: AppRouter = {
     ),
   },
   MESSAGES: {
-    path: "/messages",
+    path: "/:database/messages",
     element: (
       <MainLayout>
-        <MessagesPage />
+        <MessagesLayout>
+          <MessagesPage />
+        </MessagesLayout>
       </MainLayout>
     ),
   },
   MESSAGE_DETAIL: {
-    path: "/messages/:id",
+    path: "/:database/messages/:id",
     element: (
       <MainLayout>
-        <MessageDetailPage />
+        <MessagesLayout>
+          <MessageDetailPage />
+        </MessagesLayout>
       </MainLayout>
     ),
   },

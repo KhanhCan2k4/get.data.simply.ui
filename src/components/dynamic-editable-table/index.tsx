@@ -167,7 +167,7 @@ export function DynamicEditableTable({
             onChange={(e) =>
               handleCellChange(rowIndex, column.title, e.target.checked)
             }
-            className="mx-auto block form-checkbox outline-0 text-sm"
+            className="mx-auto block form-checkbox px-4 py-2 outline-0 text"
             readOnly={readonly}
           />
         );
@@ -181,7 +181,7 @@ export function DynamicEditableTable({
             onChange={(e) =>
               handleCellChange(rowIndex, column.title, e.target.value)
             }
-            className="w-full bg-transparent p-1 form-input outline-0 text-sm"
+            className="w-full bg-transparent py-2 px-4 form-input outline-0"
             readOnly={readonly}
           />
         );
@@ -193,7 +193,7 @@ export function DynamicEditableTable({
             onChange={(e) =>
               handleCellChange(rowIndex, column.title, e.target.value)
             }
-            className="w-full bg-transparent p-1 text-right form-input outline-0 text-sm"
+            className="w-full bg-transparent py-2 px-4 text-right form-input outline-0"
             readOnly={readonly}
           />
         );
@@ -207,7 +207,7 @@ export function DynamicEditableTable({
             onChange={(e) =>
               handleCellChange(rowIndex, column.title, e.target.value)
             }
-            className="w-full bg-transparent p-1 form-input outline-0 text-sm"
+            className="w-full bg-transparent py-2 px-4 form-input outline-0"
             readOnly={readonly}
           />
         );

@@ -20,6 +20,7 @@ import Modal from "@/components/modal";
 import { AddSqlShortcutForm } from "./sql-shortcut/add-shortcut-form";
 import { createSlug } from "@/utils/create-slug";
 import { Action } from "@/components/modal-action-item";
+import { useParams } from "react-router-dom";
 
 const ALERT_WAIT_TIME = 10000;
 
@@ -63,6 +64,7 @@ const DEFAULT_SQLS: ShortCut[] = [
 export default function Console() {
   const { isOpen, closeConsole, openConsole } = useConsole();
   const shortcutDAO = useIndexedDB<ShortCut>(SHORT_CUT_STORE_KEY);
+  const { database: id } = useParams<{ database: string }>();
   const [sql, setSql] = useState("");
   const { alertElement, setAlertOptions } = useAlert();
   const [addedKeyE, setAddedKeyE] = useState<ReactNode>();
@@ -217,8 +219,14 @@ export default function Console() {
   useShortcut(["Ctrl", "Alt", "ArrowUp"], openConsole);
   useShortcut(["Ctrl", "Alt", "ArrowDown"], closeConsole);
   useEffect(handleLoadShortcuts, [shortcutDAO]);
+  useEffect(() => {
+    if (!id) {
+      closeConsole();
+    }
+  }, [id]);
 
   return (
+    id &&
     isOpen && (
       <div className="z-10 resize-y overflow-auto w-full min-h-10 h-[500px] max-h-[500px] shadow-sm bg-white absolute bottom-0 left-0 right-0 [transform:scaleY(-1)]">
         <div className="[transform:scaleY(-1)] h-full">
@@ -302,16 +310,20 @@ export default function Console() {
 
               <span className="w-2 bg-gray-100 rounded-2xl mx-2" />
               <div className="flex-1 flex gap-2 flex-wrap">
-                {savedShortcuts.length > 0 ? savedShortcuts.map((item) => (
-                  <SqlShortcut
-                    key={createSlug(item.text)}
-                    onRun={() => setSql(item.sql)}
-                    condition={() => isOpen}
-                    onContextMenu={(e) => handleOpenConfirmRemove(e, item)}
-                    {...item}
-                  />
-                )) : (
-                  <p className="italic text-sm self-center text-gray-400">Your saved shortcuts will be displayed here.</p>
+                {savedShortcuts.length > 0 ? (
+                  savedShortcuts.map((item) => (
+                    <SqlShortcut
+                      key={createSlug(item.text)}
+                      onRun={() => setSql(item.sql)}
+                      condition={() => isOpen}
+                      onContextMenu={(e) => handleOpenConfirmRemove(e, item)}
+                      {...item}
+                    />
+                  ))
+                ) : (
+                  <p className="italic text-sm self-center text-gray-400">
+                    Your saved shortcuts will be displayed here.
+                  </p>
                 )}
               </div>
             </div>
