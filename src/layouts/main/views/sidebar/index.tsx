@@ -145,6 +145,11 @@ export default function SideBar() {
     setIsModalOpen(true);
   };
 
+  const handleClick = (db: DB) => {
+    const path = ROUTERS.DATABASE_DETAIL.path.replace(":database", db.name);
+    navigate(path);
+  };
+
   useShortcut(["Ctrl", "Alt", "Digit2"], () => setOpen((prev) => !prev));
 
   return (
@@ -187,7 +192,7 @@ export default function SideBar() {
         {open && <span>Add new database</span>}
       </div>
 
-      <div className="overflow-y-scroll flex-1 flex flex-col justify-start gap-2">
+      <div className="overflow-y-scroll w-full flex-1 flex flex-col justify-start gap-2">
         {getAllDBs.isLoading
           ? Array.from({ length: SKELETON_DB_ITEMS_QUANTITY }).map(
               (_, index) => <DBSideBarItemSkeleton key={index} open={open} />
@@ -197,26 +202,19 @@ export default function SideBar() {
                 key={db.id}
                 db={db}
                 open={open}
+                onClick={() => handleClick(db)}
                 onContextMenu={(e) => handleRightClick(e, db)}
               />
             ))}
       </div>
 
-      <div className="flex items-center justify-center gap-2 pt-2 border-t-2 border-t-gray-100 cursor-pointer">
+      <div className="flex items-center justify-center gap-2 pt-2 mx-4 border-t-2 border-t-gray-100 cursor-pointer">
         <Avatar name="Hello world" />
         <div className={`flex flex-col ${!open && "hidden"}`}>
           <span className="font-semibold">Hello World</span>
           <span className="font-light text-sm">hello.world@example.com</span>
         </div>
       </div>
-
-      {/* <Modal
-        open={!!selectedE}
-        onClose={() => setSelectedE(undefined)}
-        actions={modalActions}
-      >
-        {selectedE}
-      </Modal> */}
     </section>
   );
 }

@@ -11,7 +11,7 @@ export default function DBSideBarItemSkeleton({ open }: DBSideBarItemSkeletonPro
       <NavbarItemSkeleton
         open={open}
         icon={<DatabaseIcon className="text-gray-200 w-5 h-5" />}
-        className="bg-gray-50 rounded-3xl flex items-center justify-center gap-2 cursor-wait"
+        className="bg-gray-50 flex items-center justify-center gap-2 cursor-wait"
       />
     </>
   );

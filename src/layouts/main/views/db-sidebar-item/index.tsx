@@ -1,4 +1,4 @@
-import { AddIcon, DatabaseIcon } from "@/components/icon";
+import { AddIcon, DatabaseIcon, DownIcon, UpIcon } from "@/components/icon";
 import { ROUTERS } from "@/constants/routes";
 import { DB } from "@/hooks/apis/use-dbs";
 import NavbarItem from "@/layouts/main/views/navbar-item";
@@ -27,20 +27,35 @@ export default function DBSideBarItem({
   const active = location.pathname.includes(path);
   return (
     <>
-      <NavbarItem
-        key={db.id}
-        open={open}
-        icon={<DatabaseIcon className="w-5 h-5" />}
-        path={path}
-        displayName={db.name}
-        onClick={() => {
-          navigate(path);
-          setOpenTableList((prev) => !prev);
-        }}
-        {...props}
-      />
+      <div
+        className={
+          props.onClick &&
+          `${active && "bg-gray-50"} gap-4 hover:bg-gray-50 flex pl-4`
+        }
+      >
+        {props.onClick &&
+          (openTableList ? (
+            <UpIcon
+              className="size-4 self-center text-gray-400"
+              onClick={() => setOpenTableList((prev) => !prev)}
+            />
+          ) : (
+            <DownIcon
+              className="size-4 self-center text-gray-400"
+              onClick={() => setOpenTableList((prev) => !prev)}
+            />
+          ))}
+        <NavbarItem
+          key={db.id}
+          open={open}
+          icon={<DatabaseIcon className="w-5 h-5" />}
+          path={path}
+          displayName={db.name}
+          {...props}
+        />
+      </div>
 
-      {open && active && openTableList && (
+      {open && openTableList && (
         <div className="w-full p-4 pt-2 flex flex-col gap-2">
           <div
             onClick={() => navigate(createTablePath)}

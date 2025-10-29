@@ -7,15 +7,15 @@ import {
 } from "@/components/icon";
 import { ROUTERS } from "@/constants/routes";
 import { DB } from "@/hooks/apis/use-dbs";
+import { formatSize } from "@/utils/format-size";
 import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
 
 type DatabaseCardProps = {
   db: DB;
-  formatSize: (size: number) => string;
 };
 
-export function DatabaseCard({ db, formatSize }: DatabaseCardProps) {
+export function DatabaseCard({ db }: DatabaseCardProps) {
   const navigate = useNavigate();
 
   const handleOpenDB = () => {
@@ -47,7 +47,7 @@ export function DatabaseCard({ db, formatSize }: DatabaseCardProps) {
           </div>
         </div>
 
-        <InfoIcon onClick={handleOpenDB} />
+        <InfoIcon className="size-6 cursor-pointer" onClick={handleOpenDB} />
       </div>
     </div>
   );

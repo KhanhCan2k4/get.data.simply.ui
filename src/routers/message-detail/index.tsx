@@ -9,10 +9,12 @@ import {
   CloseIcon,
   CopyIcon,
   DoubleDownIcon,
+  DoublePrevIcon,
   DownIcon,
   EditIcon,
   ForwardIcon,
   LoadIcon,
+  PrevIcon,
   SendIcon,
   TrashIcon,
   UpIcon,
@@ -40,6 +42,7 @@ export default function MessageDetailPage() {
   const [foundMsgIdx, setFoundMsgIdx] = useState(0);
   const [foundMsgIds, setFoundMsgIds] = useState<string[]>([]);
   const { setModalChildren, setIsModalOpen, setModalActions } = useModal();
+  const [showBackArrow, setShowBackArrow] = useState(false);
 
   const handleRemoveMsg = (msg: Message) => {
     setAlertOptions(
@@ -69,10 +72,9 @@ export default function MessageDetailPage() {
 
     setModalChildren &&
       setModalChildren(
-        <MessageItem
-          className="shadow-sm bg-white w-[500px] p-4 flex rounded-2xl rounded-tl-xs"
-          msg={data}
-        />
+        <div className="flex flex-col px-2 min-w-[800px]">
+          <MessageItem msg={data} />
+        </div>
       );
 
     setModalActions &&
@@ -133,6 +135,16 @@ export default function MessageDetailPage() {
     }
   };
 
+  const handleNavigateBack = () => {
+    if (!database) return;
+
+    const parentPath = ROUTERS.DATABASE_DETAIL.path.replace(
+      ":database",
+      database
+    );
+    navigate(parentPath);
+  };
+
   useEffect(() => {
     if (!database) {
       () => navigate(ROUTERS.HOME.path);
@@ -159,10 +171,26 @@ export default function MessageDetailPage() {
   return (
     receiver && (
       <section className="p-2 flex flex-col h-full gap-2">
-        <div className="p-2 bg-white shadow-sm rounded-full flex flex-row items-center gap-2">
-          <Avatar name={database ?? "Database"} className="w-12 h-12" />
+        <div
+          className="p-2 bg-white shadow-sm rounded-full flex flex-row items-center gap-2 cursor-default"
+          onMouseLeave={() => setShowBackArrow(false)}
+        >
+          {showBackArrow && (
+            <DoubleDownIcon
+              onClick={handleNavigateBack}
+              className="size-4 ml-4 animate-bounce rotate-90 text-blue-400 cursor-pointer"
+            />
+          )}
+          <Avatar
+            name={database ?? "Database"}
+            className="w-12 h-12"
+            onMouseEnter={() => setShowBackArrow(true)}
+          />
           <div className="flex-1 flex flex-col">
-            <span className="font-semibold">{database}</span>
+            <span className="font-semibold">
+              <span className="text-xs">[GROUP CHAT IN DATABASE]</span>{" "}
+              {database}
+            </span>
             <span className="font-light text-sm">5+ members</span>
           </div>
           <div className="flex gap-2 items-center">
@@ -210,13 +238,13 @@ export default function MessageDetailPage() {
         {repliedMsg && (
           <>
             <div className="flex justify-between">
-              <span className="py-1">Replying to: </span>
+              <span className="text-sm italic">Replying to: </span>
               <CloseIcon
                 className="w-5 h-5 self-center cursor-pointer"
                 onClick={() => setRepliedMsg(undefined)}
               />
             </div>
-            <div className="border-1 p-2 border-gray-300 flex">
+            <div className="border-1 p-2 border-gray-300 flex rounded-xl">
               <MessageItem
                 key={repliedMsg.id}
                 msg={repliedMsg}
@@ -228,13 +256,13 @@ export default function MessageDetailPage() {
         {editedMsg && (
           <>
             <div className="flex justify-between">
-              <span className="py-1">Editing: </span>
+              <span className="text-sm italic">Editing: </span>
               <CloseIcon
                 className="w-5 h-5 self-center cursor-pointer"
                 onClick={() => setEditedMsg(undefined)}
               />
             </div>
-            <div className="border-1 p-2 border-gray-300 flex">
+            <div className="border-1 p-2 border-gray-300 flex rounded-xl">
               <MessageItem
                 key={editedMsg.id}
                 msg={editedMsg}
@@ -245,10 +273,9 @@ export default function MessageDetailPage() {
         )}
         <div className="flex flex-row gap-4 w-full relative">
           {!isOnBottom && (
-            <DoubleDownIcon
-              onClick={scrollToBottom}
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 size-6 cursor-pointer animate-bounce text-orange-400 z-10"
-            />
+            <button className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-12 cursor-pointer animate-bounce text-blue-400 z-10 bg-white p-3 rounded-full shadow-sm">
+              <DoubleDownIcon onClick={scrollToBottom} className="size-5" />
+            </button>
           )}
 
           <div className="flex-1 relative">
@@ -258,12 +285,12 @@ export default function MessageDetailPage() {
               className="w-full h-full py-2 pr-4 pl-10 bg-white rounded-xl outline-0 shadow-sm self-center resize-none"
             ></textarea>
 
-            <EditIcon className="absolute text-gray-400 top-4 left-4 w-4 h-4" />
-            <CloseIcon className="absolute text-gray-400 top-4 right-4 w-4 h-4 hover:text-red-500 hover:scale-120" />
+            <EditIcon className="absolute text-gray-400 top-4 left-4 w-4 h-4 cursor-text" />
+            <CloseIcon className="absolute text-gray-400 top-4 right-4 w-4 h-4 hover:text-red-500 hover:scale-120 cursor-pointer" />
           </div>
 
-          <div className="rounded-full w-20 h-20 bg-white flex items-center justify-center shadow-sm hover:bg-blue-400 hover:text-white hover:-rotate-45 transition-all duration-300">
-            <SendIcon className="w-6 h-6" />
+          <div className="rounded-full p-4 self-center bg-white flex items-center justify-center shadow-sm hover:bg-blue-400 hover:text-white hover:-rotate-45 transition-all duration-300">
+            <SendIcon />
           </div>
         </div>
       </section>

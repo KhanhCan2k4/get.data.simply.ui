@@ -22,11 +22,7 @@ type AppRouter = {
 const ROUTERS: AppRouter = {
   HOME: {
     path: "/",
-    element: (
-      <MainLayout>
-        <DashboardPage />
-      </MainLayout>
-    ),
+    element: <DashboardPage />,
     index: true,
   },
   DATABASE_DETAIL: {
@@ -73,7 +69,7 @@ const ROUTERS: AppRouter = {
     path: "/:database/messages",
     element: (
       <MainLayout>
-          <MessageDetailPage />
+        <MessageDetailPage />
       </MainLayout>
     ),
   },

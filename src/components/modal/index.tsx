@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ModalActionItem, { Action } from "@/components/modal-action-item";
 import { useModal } from "@/providers/modal";
+import { CloseIcon } from "../icon";
 
 const DELAY_OPEN_TIME = 200;
 
@@ -65,6 +66,15 @@ export default function Modal({
             {actions.map((action, index) => (
               <ModalActionItem action={action} key={index} />
             ))}
+          </div>
+
+          <div className="mt-2 flex justify-center">
+            <button
+              className="bg-white p-4 rounded-full hover:bg-blue-400 hover:text-white shadow-sm transition-colors duration-100"
+              onClick={() => setClose(true)}
+            >
+              <CloseIcon className="size-4" />
+            </button>
           </div>
         </div>
       </div>

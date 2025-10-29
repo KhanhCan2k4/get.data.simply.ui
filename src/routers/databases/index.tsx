@@ -21,6 +21,8 @@ import { ChartCard } from "./views/chart-card";
 import { StatCard } from "./views/stat-card";
 import { TypeCountChart } from "./views/type-count-chart";
 import { SizeDistributionChart } from "./views/size-distribution-chart";
+import Avatar from "@/components/avatar";
+import { formatSize } from "@/utils/format-size";
 
 const mockDashboardData = {
   systemStats: {
@@ -80,18 +82,11 @@ export default function DashboardPage() {
     );
   }, [databases, searchTerm]);
 
-  const formatSize = (sizeMB: number) => {
-    if (sizeMB > 1024) {
-      return `${(sizeMB / 1024).toFixed(2)} GB`;
-    }
-    return `${sizeMB} MB`;
-  };
-
   return (
     <div className="bg-gray-100 min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-full mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <div className="flex gap-3 items-center text-xl font-bold bg-white py-4 px-8 rounded-full shadow-sm">
+          <div className="flex gap-3 items-center font-bold bg-white py-4 px-8 rounded-full shadow-sm">
             <img
               src={__logo}
               alt="Logo"
@@ -99,6 +94,16 @@ export default function DashboardPage() {
               onClick={() => navigate(ROUTERS.HOME.path)}
             />
             GET DATA SIMPLY
+            <span className="w-1 h-10 rounded-full bg-gray-200 mx-2" />
+            <div className="flex items-center justify-center gap-2 cursor-pointer">
+              <Avatar name="Hello world" />
+              <div className={`flex flex-col ${!open && "hidden"}`}>
+                <span className="font-semibold">Hello World</span>
+                <span className="font-light text-sm">
+                  hello.world@example.com
+                </span>
+              </div>
+            </div>
           </div>
           <button
             onClick={() => navigate(ROUTERS.DATABASE_CREATE.path)}
@@ -147,7 +152,7 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredDatabases.map((db) => (
-                <DatabaseCard key={db.id} db={db} formatSize={formatSize} />
+                <DatabaseCard key={db.id} db={db} />
               ))}
             </div>
           </div>
