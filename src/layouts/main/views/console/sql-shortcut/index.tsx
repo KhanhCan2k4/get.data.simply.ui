@@ -3,8 +3,9 @@ import { ConsoleIcon } from "@/components/icon";
 import Modal from "@/components/modal";
 import { Action } from "@/components/modal-action-item";
 import { useShortcut } from "@/hooks/use-shortcut";
-import { ReactNode, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import "@/index.css";
+import { useModal } from "@/providers/modal";
 
 type SqlShortcutProps = {
   text: React.JSX.Element | ReactNode | string;
@@ -24,33 +25,35 @@ export function SqlShortcut({
 }: React.HTMLAttributes<HTMLSpanElement> &
   React.PropsWithChildren &
   SqlShortcutProps) {
-  const [open, setOpen] = useState(false);
-  const actions: Action[] = [
-    {
-      icon: <ConsoleIcon className="size-4" />,
-      title: "Run",
-      onClick: () => {
-        setOpen(false);
-        onRun();
-      },
-    },
-  ];
+  const { setIsModalOpen, setModalChildren, setModalActions } = useModal();
+
+  const handleOpen = () => {
+    if (children) {
+      setModalChildren && setModalChildren(children);
+
+      setModalActions &&
+        setModalActions([
+          {
+            icon: <ConsoleIcon className="size-4" />,
+            title: "Run",
+            onClick: () => {
+              setIsModalOpen(false);
+              onRun();
+            },
+          },
+        ]);
+
+      setIsModalOpen(true);
+    } else {
+      onRun();
+    }
+  };
+  
   useShortcut(keys, onRun, condition);
 
   return (
-    <>
-      <BadgeButton {...props} onClick={children ? () => setOpen(true) : onRun}>
-        {text}
-      </BadgeButton>
-
-      <Modal
-        open={open}
-        actions={children ? actions : []}
-        onClose={() => setOpen(false)}
-        className="top-2"
-      >
-        {children}
-      </Modal>
-    </>
+    <BadgeButton {...props} onClick={handleOpen}>
+      {text}
+    </BadgeButton>
   );
 }

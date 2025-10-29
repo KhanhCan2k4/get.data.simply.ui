@@ -11,7 +11,7 @@ import SqlEditor from "@/components/sql-editor";
 import { useShortcut } from "@/hooks/use-shortcut";
 import { useConsole } from "@/providers/console";
 import { SqlShortcut } from "./sql-shortcut";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Parser } from "node-sql-parser";
 import { useAlert } from "@/hooks/use-alert";
 import { AlertType } from "@/components/alert";
@@ -21,6 +21,7 @@ import { AddSqlShortcutForm } from "./sql-shortcut/add-shortcut-form";
 import { createSlug } from "@/utils/create-slug";
 import { Action } from "@/components/modal-action-item";
 import { useParams } from "react-router-dom";
+import { useModal } from "@/providers/modal";
 
 const ALERT_WAIT_TIME = 10000;
 
@@ -64,13 +65,16 @@ const DEFAULT_SQLS: ShortCut[] = [
 export default function Console() {
   const { isOpen, closeConsole, openConsole } = useConsole();
   const shortcutDAO = useIndexedDB<ShortCut>(SHORT_CUT_STORE_KEY);
-  const { database: id } = useParams<{ database: string }>();
+  const { database } = useParams<{ database: string }>();
   const [sql, setSql] = useState("");
   const { alertElement, setAlertOptions } = useAlert();
-  const [addedKeyE, setAddedKeyE] = useState<ReactNode>();
-  const [removedKeyE, setRemovedKeyE] = useState<ReactNode>();
-  const [removedKeyActions, setRemovedKeyActions] = useState<Action[]>([]);
   const [savedShortcuts, setSavedShortcuts] = useState<ShortCut[]>([]);
+  const { setIsModalOpen, setModalChildren, setModalActions } = useModal();
+  const {
+    setIsModalOpen: setIsModalRemoveOpen,
+    setModalActions: setModalRemoveActions,
+    setModalChildren: setModalRemoveChildren,
+  } = useModal();
 
   const handleRunSql = () => {
     if (!sql) {
@@ -109,7 +113,7 @@ export default function Console() {
   };
 
   const handleAddShortCut = (name: string) => {
-    setAddedKeyE(undefined);
+    setIsModalOpen(false);
 
     setAlertOptions(
       <p className="p-2 flex flex-row items-center">
@@ -152,7 +156,7 @@ export default function Console() {
   };
 
   const handleRemoveShortCut = (name: string) => {
-    setRemovedKeyE(undefined);
+    setIsModalRemoveOpen(false);
 
     setAlertOptions(
       <p className="p-2 flex flex-row items-center">
@@ -193,22 +197,43 @@ export default function Console() {
   ) => {
     event.preventDefault();
 
-    setRemovedKeyE(
-      <SqlShortcut
-        onRun={() => undefined}
-        {...shortcut}
-        className="bg-blue-400 text-white"
-      />
+    setModalRemoveChildren &&
+      setModalRemoveChildren(
+        <SqlShortcut
+          onRun={() => undefined}
+          {...shortcut}
+          className="bg-blue-400 text-white"
+        />
+      );
+
+    setModalRemoveActions &&
+      setModalRemoveActions([
+        {
+          icon: <TrashIcon className="size-4" />,
+          title: "Remove this key",
+          onClick: () => handleRemoveShortCut(shortcut.text),
+        },
+      ]);
+
+    setIsModalRemoveOpen(true);
+  };
+
+  const handleOpenFormAddShortcut = useCallback(() => {
+    if (!sql || !setModalChildren) return;
+    setModalChildren(
+      <AddSqlShortcutForm onFinish={handleAddShortCut} sql={sql} />
     );
 
-    setRemovedKeyActions([
-      {
-        icon: <TrashIcon className="size-4" />,
-        title: "Remove this key",
-        onClick: () => handleRemoveShortCut(shortcut.text),
-      },
-    ]);
-  };
+    setModalActions && setModalActions([]);
+
+    setIsModalOpen(true);
+  }, [
+    sql,
+    setModalChildren,
+    handleAddShortCut,
+    setIsModalOpen,
+    setModalActions,
+  ]);
 
   const handleLoadShortcuts = () => {
     shortcutDAO
@@ -220,13 +245,13 @@ export default function Console() {
   useShortcut(["Ctrl", "Alt", "ArrowDown"], closeConsole);
   useEffect(handleLoadShortcuts, [shortcutDAO]);
   useEffect(() => {
-    if (!id) {
+    if (!database) {
       closeConsole();
     }
-  }, [id]);
+  }, [database]);
 
   return (
-    id &&
+    database &&
     isOpen && (
       <div className="z-10 resize-y overflow-auto w-full min-h-10 h-[500px] max-h-[500px] shadow-sm bg-white absolute bottom-0 left-0 right-0 [transform:scaleY(-1)]">
         <div className="[transform:scaleY(-1)] h-full">
@@ -282,17 +307,7 @@ export default function Console() {
               <SqlShortcut
                 text={<AddIcon className="size-4" />}
                 keys={["Ctrl", "Alt", "N"]}
-                onRun={
-                  !sql
-                    ? () => {}
-                    : () =>
-                        setAddedKeyE(
-                          <AddSqlShortcutForm
-                            onFinish={handleAddShortCut}
-                            sql={sql}
-                          />
-                        )
-                }
+                onRun={handleOpenFormAddShortcut}
                 condition={() => isOpen}
                 className="hover:bg-blue-400 h-fit"
               />
@@ -330,18 +345,6 @@ export default function Console() {
           </div>
           {alertElement}
           <SqlEditor defaultSql={sql} onFinish={setSql} />
-
-          <Modal open={!!addedKeyE} onClose={() => setAddedKeyE(undefined)}>
-            {addedKeyE}
-          </Modal>
-
-          <Modal
-            open={!!removedKeyE}
-            actions={removedKeyActions}
-            onClose={() => setRemovedKeyE(undefined)}
-          >
-            {removedKeyE}
-          </Modal>
         </div>
       </div>
     )

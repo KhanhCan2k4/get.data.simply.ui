@@ -62,11 +62,13 @@ export default function Modal({
           className={`absolute top-10 left-1/2 -translate-x-1/2 z-30 ${props.className}`}
         >
           {children}
-          <div className="mt-4 flex flex-col gap-2 border-1 border-blue-200 p-2 rounded-2xl">
-            {actions.map((action, index) => (
-              <ModalActionItem action={action} key={index} />
-            ))}
-          </div>
+          {actions.length > 0 && (
+            <div className="mt-4 flex flex-col gap-2 border-1 border-blue-200 p-2 rounded-2xl">
+              {actions.map((action, index) => (
+                <ModalActionItem action={action} key={index} />
+              ))}
+            </div>
+          )}
 
           <div className="mt-2 flex justify-center">
             <button

@@ -1,10 +1,17 @@
-import { AddIcon, DatabaseIcon, DownIcon, UpIcon } from "@/components/icon";
+import {
+  AddIcon,
+  DatabaseIcon,
+  DownIcon,
+  MySQLIcon,
+  PostgresIcon,
+  UpIcon,
+} from "@/components/icon";
 import { ROUTERS } from "@/constants/routes";
 import { DB } from "@/hooks/apis/use-dbs";
 import NavbarItem from "@/layouts/main/views/navbar-item";
 import { useLocation, useNavigate } from "react-router-dom";
 import TableSideBarItem from "@/layouts/main/views/table-sider-item";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type DBSideBarItemProps = {
   db: DB;
@@ -25,6 +32,17 @@ export default function DBSideBarItem({
     db.name
   );
   const active = location.pathname.includes(path);
+
+  const icon = useMemo(() => {
+    switch (db.type) {
+      case "mysql":
+        return <MySQLIcon className="size-5 text-purple-600" />;
+      case "postgres":
+        return <PostgresIcon className="size-5 text-blue-600" />;
+      default:
+        return <DatabaseIcon className="size-5 text-gray-600" />;
+    }
+  }, [db.type]);
   return (
     <>
       <div
@@ -48,7 +66,7 @@ export default function DBSideBarItem({
         <NavbarItem
           key={db.id}
           open={open}
-          icon={<DatabaseIcon className="w-5 h-5" />}
+          icon={icon}
           path={path}
           displayName={db.name}
           {...props}
